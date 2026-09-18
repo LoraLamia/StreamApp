@@ -45,6 +45,6 @@ struct VideoSurfaceView: View {
 }
 
 #Preview {
-    VideoSurfaceView(viewModel: StreamPlayerViewModel(stream: .bigBuckBunny))
+    VideoSurfaceView(viewModel: StreamPlayerViewModel(stream: SampleContent.bigBuckBunnyStream))
         .padding()
 }

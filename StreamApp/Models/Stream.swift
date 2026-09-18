@@ -5,14 +5,10 @@
 
 import Foundation
 
-struct Stream {
+/// A playable HLS source.
+struct Stream: Hashable {
     let title: String
     let url: URL
-}
-
-extension Stream {
-    static let bigBuckBunny = Stream(
-        title: "Big Buck Bunny",
-        url: URL(string: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8")!
-    )
+    /// Live streams have no fixed duration, so the scrubber is disabled.
+    var isLive = false
 }

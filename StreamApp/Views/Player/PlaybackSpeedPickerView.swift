@@ -19,6 +19,6 @@ struct PlaybackSpeedPickerView: View {
 }
 
 #Preview {
-    PlaybackSpeedPickerView(viewModel: StreamPlayerViewModel(stream: .bigBuckBunny))
+    PlaybackSpeedPickerView(viewModel: StreamPlayerViewModel(stream: SampleContent.bigBuckBunnyStream))
         .padding()
 }

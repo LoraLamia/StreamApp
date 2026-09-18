@@ -15,7 +15,9 @@ struct StreamInfoView: View {
                 Text(viewModel.sourceDescription)
                     .lineLimit(2)
                     .truncationMode(.middle)
-                    .textSelection(.enabled)
+#if !os(tvOS)
+.textSelection(.enabled)
+#endif
             }
         }
         .font(.footnote)
@@ -25,6 +27,6 @@ struct StreamInfoView: View {
 }
 
 #Preview {
-    StreamInfoView(viewModel: StreamPlayerViewModel(stream: .bigBuckBunny))
+    StreamInfoView(viewModel: StreamPlayerViewModel(stream: SampleContent.bigBuckBunnyStream))
         .padding()
 }

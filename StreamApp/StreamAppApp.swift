@@ -11,7 +11,8 @@ import SwiftUI
 struct StreamAppApp: App {
     var body: some Scene {
         WindowGroup {
-            StreamPlayerView()
+            HomeView()
+                .preferredColorScheme(.dark)
         }
     }
 }

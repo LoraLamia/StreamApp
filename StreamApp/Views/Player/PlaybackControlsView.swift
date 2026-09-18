@@ -20,6 +20,6 @@ struct PlaybackControlsView: View {
 }
 
 #Preview {
-    PlaybackControlsView(viewModel: StreamPlayerViewModel(stream: .bigBuckBunny))
+    PlaybackControlsView(viewModel: StreamPlayerViewModel(stream: SampleContent.bigBuckBunnyStream))
         .padding()
 }

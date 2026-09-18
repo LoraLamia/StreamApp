@@ -39,6 +39,6 @@ struct TransportControlsView: View {
 }
 
 #Preview {
-    TransportControlsView(viewModel: StreamPlayerViewModel(stream: .bigBuckBunny))
+    TransportControlsView(viewModel: StreamPlayerViewModel(stream: SampleContent.bigBuckBunnyStream))
         .padding()
 }

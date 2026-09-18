@@ -24,12 +24,23 @@ final class StreamPlayerViewModel {
     private let engine: any PlaybackEngine
     private let skipInterval: TimeInterval = 10
 
-    /// Non-nil while the user is dragging the scrubber.
+    /// Non-nil while the user is dragging the scrubber (iOS) or nudging it
+    /// with the remote (tvOS).
     private var scrubPosition: TimeInterval?
+
+    /// How long to wait after the last remote press before seeking.
+    private let scrubCommitDelay: Duration = .milliseconds(400)
+    @ObservationIgnored private var scrubCommitTask: Task<Void, Never>?
 
     init(stream: Stream, engine: any PlaybackEngine = AVFoundationPlaybackEngine()) {
         self.stream = stream
         self.engine = engine
+    }
+
+    /// Loads the stream and starts playback. The view calls this once when
+    /// the player screen appears, so creating the view model has no side
+    /// effects.
+    func start() {
         engine.load(url: stream.url)
         engine.play()
     }
@@ -48,7 +59,9 @@ final class StreamPlayerViewModel {
 
     var sliderRange: ClosedRange<TimeInterval> { 0...max(engine.duration, 1) }
     var currentTimeText: String { PlaybackTimeFormatter.string(from: sliderValue) }
-    var durationText: String { PlaybackTimeFormatter.string(from: engine.duration) }
+    var durationText: String {
+        stream.isLive ? "LIVE" : PlaybackTimeFormatter.string(from: engine.duration)
+    }
 
     var statusDescription: String {
         switch engine.status {
@@ -109,8 +122,33 @@ final class StreamPlayerViewModel {
         scrubPosition = nil
     }
 
+    // MARK: Remote scrubbing (tvOS)
+
+    func scrubBackward() {
+        nudgeScrubPosition(by: -skipInterval)
+    }
+
+    func scrubForward() {
+        nudgeScrubPosition(by: skipInterval)
+    }
+
+    /// Moves the scrub position without seeking yet. The seek happens once
+    /// the user stops pressing for `scrubCommitDelay`, so holding a remote
+    /// button feels like fast-forward instead of firing a network seek on
+    /// every single press.
+    private func nudgeScrubPosition(by step: TimeInterval) {
+        guard canScrub else { return }
+        scrubPosition = min(max(sliderValue + step, 0), engine.duration)
+
+        scrubCommitTask?.cancel()
+        scrubCommitTask = Task {
+            try? await Task.sleep(for: scrubCommitDelay)
+            guard !Task.isCancelled else { return }
+            sliderEditingChanged(false)
+        }
+    }
+
     func retry() {
-        engine.load(url: stream.url)
-        engine.play()
+        start()
     }
 }
